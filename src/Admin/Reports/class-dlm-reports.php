@@ -320,14 +320,14 @@ if ( ! class_exists( 'DLM_Reports' ) ) {
 			}
 
 			$cache_key = 'dlm_insights_users';
-			$users_data = array();
-			$stats = wp_cache_get( $cache_key, 'dlm_user_data' );
+			$user_data = array();
 
+			$stats = wp_cache_get( $cache_key, 'dlm_user_data' );
 			if ( ! $stats ) {
 				$users = get_users();
 				foreach ( $users as $user ) {
 					$user_data                    = $user->data;
-					$users_data[] = array(
+					$users_data[ $user_data->ID ] = array(
 						'id'           => $user_data->ID,
 						'nicename'     => $user_data->user_nicename,
 						'url'          => $user_data->user_url,
@@ -338,7 +338,8 @@ if ( ! class_exists( 'DLM_Reports' ) ) {
 				}
 				wp_cache_set( $cache_key, $user_data, 'dlm_user_data', 12 * HOUR_IN_SECONDS );
 			}
-			return $users_data;
+
+			return $user_data;
 		}
 
 		/**
