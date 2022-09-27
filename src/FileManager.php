@@ -71,7 +71,19 @@ class DLM_File_Manager {
 			/** This is an absolute path */
 			$remote_file = false;
 
-		} elseif ( strpos( $file_path, $wp_uploads_url ) !== false ) {
+		} elseif ( strpos( $wp_uploads_dir, '://' ) !== false ) {
+
+			/** This is a file located on a network drive */
+			$remote_file = false;
+			$path = array_reduce( $allowed_paths, function ($carry, $path) use ($wp_uploads_dir, $wp_uploads_url, $file_path ) {
+				return strpos( $path, '://' ) !== false && strpos( $wp_uploads_dir, $path ) !== false 
+					? trim( str_replace( $wp_uploads_url, $wp_uploads_dir, $file_path ) )
+					: $carry;
+			}, false);
+
+			$file_path = file_exists( $path ) ? $path : realpath( $file_path );
+
+		}  elseif ( strpos( $file_path, $wp_uploads_url ) !== false ) {
 
 			/** This is a local file given by URL so we need to figure out the path */
 			$remote_file = false;
